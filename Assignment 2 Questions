@@ -1,0 +1,40 @@
+Robotics to-do/questions:
+
+- Which aspects of the project are classes useful for?
+
+- How do we connect to the actual robot? Is it easier than the UR3?
+	Do we need any extra cables or anything
+
+- Is there a kinect and a stand we could use?
+
+- All in matlab or will we require ROS?
+
+- Sensor (IR, and image) data into matlab in real time?
+
+- Singularities
+
+
+
+
+
+Functional blocks of our project:
+	- Vision (Using a kinect sensor, initially directly above the workspace)
+	- Inverse kinematics from the pose of the match boxes, to the desired placement position.
+	- GUI (Allowing the user to choose a variety of different different construction options
+	- Obstacle/collision avoidance
+	- Safety features (such as an e-stop)
+
+
+Assignment requirements:
+	- Matlab GUI including advanced teach functionality (including [x,y,z] movements)
+	- Functional e-stop (see requirements)
+	- Simulated environment (with barriers etc)
+	- Possibly incorporate a sensor such as hand detection of a simple IR sensor (light curtain)
+	- Retreating from a saftey symbol using visual servoing.
+	- Keep all matlab code on git
+ 	- Bonuses (Use the kinect camera, and an IRL e-stop).
+	
+
+
+
+
