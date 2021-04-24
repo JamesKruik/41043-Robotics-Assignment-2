@@ -58,19 +58,22 @@ analogRange = [0,5];
 irReadings = zeros(1,5);
 irThreshold = 0.7;
 curtainFlag = 0;
+initialIRreadings = 5;
 
-for i = 1:5
+% takes initial readings on boot and averages them, to give baseline 
+irReadings = zeros(1,initialIRreadings);
+for i = 1:initialIRreadings
     irReadings(1,i) = readVoltage(a, 'A1')
 end
 
-distanceGoal = mean(irReadings)
+distanceGoal = mean(irReadings)     
 
 
 for i = 1:500
 %disp('------------- New reading -------------');
 
-irRaw = readVoltage(a, 'A1');
-eStopRaw = readVoltage(a, 'A5');
+irRaw = readVoltage(a, 'A1');           % Analog pin 1 on arduino Uno
+eStopRaw = readVoltage(a, 'A5');        % Analog pin 5 on arduino Uno
     if abs(distanceGoal-irRaw) > irThreshold
         curtainFlag = 1;    
     end
@@ -84,11 +87,7 @@ elseif eStopRaw >= 4 && curtainFlag == 1
     else
         disp('Stopped');
     end
-        
 
-% 
-% irDistance = (log(irRaw/3.0206))/(-0.212);
-% disp(irDistance);
 pause(0.01);
 end
 
