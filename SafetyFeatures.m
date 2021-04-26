@@ -32,6 +32,7 @@ deltaT_blink = 0.5;
 % used to communicate with the arduino board
 
 port = '/dev/ttyUSB0';
+
 board = 'Uno';
 
 a = arduino(port, board);

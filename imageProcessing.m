@@ -12,7 +12,7 @@
 % clean up the image and remove any noise. Could just be a manner of
 %   reducing each to a binary image with the rectangles visible
 
-% assign a number/name to each
+% assign a number/name to each (determine the number of boxes in the scene)
 
 % determine the pose of each (the z-component should already be known)
 %   (We want the point of contact, so the top, and the centre, as well as
@@ -20,6 +20,7 @@
 
 % store the poses in a cell array in a similar manner to assignment 1
     % initialize matchbox TRs
+    
     for 1: number of matchboxes available
         matchbox{i} = homogeneous TR of the current matchbox
     end

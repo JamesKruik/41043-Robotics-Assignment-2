@@ -33,6 +33,16 @@ Assignment requirements:
 	- Retreating from a saftey symbol using visual servoing.
 	- Keep all matlab code on git
  	- Bonuses (Use the kinect camera, and an IRL e-stop).
+
+workflow:
+
+camera detects objects in workspace
+-> Are they matchboxes? If yes, then make the matchbox into a child of the matchbox class
+-> assign the correct properties, such as X-Y position as well as rotation (pose) to that class/object.
+
+
+
+
 	
 
 
