@@ -1,0 +1,44 @@
+Safety Features Functions
+
+Properties
+
+
+
+(void) SetUpArduino
+
+	port = '/dev/ttyUSB0';
+        board = 'Uno';
+        a = arduino(port, board);
+
+
+(void) SetGoalDistance
+	irReadings = zeros(1,initialIRreadings);
+            
+		for i = 1:initialIRreadings
+                	irReadings(1,i) = readVoltage(a, 'A1')
+            	end
+        distanceGoal = mean(irReadings)
+
+
+
+(bool) IsSafe
+	irRaw = readVoltage(a, 'A1');           % Analog pin 1 on arduino Uno
+        eStopRaw = readVoltage(a, 'A5');        % Analog pin 5 on arduino Uno
+                
+% Set the irFlag based upon if something has crossed over or not                
+		if abs(distanceGoal-irRaw) > irThreshold
+                    curtainFlag = 1;        %something has crossed
+                end
+                
+                if eStopRaw >= 4 && curtainFlag == 0
+                    
+                    bool = True;
+
+                else
+                    bool = False;
+                end
+
+
+
+
+
