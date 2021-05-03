@@ -1,0 +1,16 @@
+3rd May 2021 Workflow goals
+
+- Produce code for safety in demo portion of assignment
+	--> make the robot retreat from a simulated safety symbol
+	--> utilising visual servoing and RMRC
+	--> use of AR tags to set as an obstacle to avoid impact, must use trajectory to move 
+	    around the tage or simply retrun back to home state to illutrate avoidance.
+
+
+- Bonus
+	--> having system react to real or simulated RGB-D sensor data.
+	--> calibration, mapping, object orientation, image processing
+	--> will focus on the single RGB camera for object recognition
+	--> setup Kinect camera as a secondary to identify environment calibration
+	    first
+	-->if possible use the Kinect for image processing for the end effector.		
