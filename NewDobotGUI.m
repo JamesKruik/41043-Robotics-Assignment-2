@@ -41,6 +41,7 @@ if nargout
 else
     gui_mainfcn(gui_State, varargin{:});
 end
+
 % End initialization code - DO NOT EDIT
 
 
@@ -54,6 +55,9 @@ function NewDobotGUI_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for NewDobotGUI
 handles.output = hObject;
+
+%disp('setting flag to 0')
+handles.EStopFlag = 0;
 
 % Update handles structure
 guidata(hObject, handles);
@@ -85,6 +89,7 @@ function pushbutton1asdas_Callback(hObject, eventdata, handles)
 cla
 axes(handles.axes1);
 
+
 L1 = Link('d',0.08,      'a',0,      'alpha', pi/2,   'offset',0.0,   'qlim', [deg2rad(-135), deg2rad(135)]);
 L2 = Link('d',0.0,      'a',-0.135,    'alpha',0,    'offset',-pi/2,   'qlim', [deg2rad(5), deg2rad(80)]);
 L3 = Link('d',0.0,      'a',-0.147,    'alpha',0,    'offset',0,   'qlim', [deg2rad(15), deg2rad(170)]);
@@ -97,7 +102,8 @@ qHome(1,4) = pi/2 - qHome(1,2) -qHome(1,3);
 model.plot(qHome);
 
 disp('Loaded Dobot')
-eStopFlag = 0;
+disp(handles.EStopFlag)
+
 % for linkIndex = 0:model.n
 %     [ faceData, vertexData, plyData{linkIndex+1} ] = plyread(['UR5Link',num2str(linkIndex),'.ply'],'tri'); %#ok<AGROW>        
 %     model.faces{linkIndex+1} = faceData;
@@ -158,7 +164,15 @@ guidata(hObject,data);
 
 % --- Executes on button press in pushbutton2. (q1 -)
 function pushbutton2_Callback(hObject, eventdata, handles)
+
+%disp(handles.EStopFlag)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
 q = handles.model.getpos;
+% Vary the value of the target joint by a small amount
 q(1,1) = q(1,1) - 0.1;
 
 if q(1,1) < handles.model.qlim(1,1)
@@ -166,14 +180,20 @@ if q(1,1) < handles.model.qlim(1,1)
     q(1,1) = handles.model.qlim(1,1);
 end
 
+%update q config to reflect the relationship to the endeffector
 q(1,4) = pi/2 - q(1,2) -q(1,3);
-
 handles.model.animate(q);
 disp('q1 -')
 
 
 % --- Executes on button press in pushbutton3. (q1 +)
 function pushbutton3_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 q(1,1) = q(1,1) + 0.1;
 if q(1,1) > handles.model.qlim(1,2)
@@ -182,13 +202,18 @@ if q(1,1) > handles.model.qlim(1,2)
 end
 
 q(1,4) = pi/2 - q(1,2) -q(1,3);
-
 handles.model.animate(q);
 disp('q1 +')
 
 
 % --- Executes on button press in pushbutton4. (q2 -)
 function pushbutton4_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 q(1,2) = q(1,2) - 0.1;
 if q(1,2) < handles.model.qlim(2,1)
@@ -204,6 +229,12 @@ disp('q2 -')
 
 % --- Executes on button press in pushbutton5. (q2 +)
 function pushbutton5_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 q(1,2) = q(1,2) + 0.1;
 if q(1,2) > handles.model.qlim(2,2)
@@ -219,6 +250,12 @@ disp('q2 +')
 
 % --- Executes on button press in pushbutton6. (q3 -)
 function pushbutton6_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 q(1,3) = q(1,3) - 0.1;
 if q(1,3) < handles.model.qlim(3,1)
@@ -234,6 +271,12 @@ disp('q3 -')
 
 % --- Executes on button press in pushbutton7. (q3 +)
 function pushbutton7_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 q(1,3) = q(1,3) + 0.1;
 if q(1,3) > handles.model.qlim(3,2)
@@ -249,6 +292,12 @@ disp('q3 +')
 
 % --- Executes on button press in pushbutton8. (q4 -)
 function pushbutton8_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 %q = handles.model.getpos;
 %q(1,4) = q(1,4) - 0.1;
 %handles.model.animate(q);
@@ -257,6 +306,12 @@ disp('q4 is defined by q2 and q3')
 
 % --- Executes on button press in pushbutton9. (q4 +)
 function pushbutton9_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 %q = handles.model.getpos;
 %q(1,4) = q(1,4) + 0.1;
 %handles.model.animate(q);
@@ -265,6 +320,12 @@ disp('q4 is defined by q2 and q3')
 
 % --- Executes on button press in pushbutton10. (q5 -)
 function pushbutton10_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 q(1,5) = q(1,5) - 0.1;
 if q(1,5) < handles.model.qlim(5,1)
@@ -277,6 +338,12 @@ disp('q5 -')
 
 % --- Executes on button press in pushbutton11. (q5 +)
 function pushbutton11_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 q(1,5) = q(1,5) + 0.1;
 if q(1,5) > handles.model.qlim(5,2)
@@ -289,10 +356,16 @@ disp('q5 +')
 
 % --- Executes on button press in pushbutton12. (X +)
 function pushbutton12_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;   %current q (safe)
 tr = handles.model.fkine(q); %current TR
 
-tr(1,4) = tr(1,4) + 0.05;
+tr(1,4) = tr(1,4) + 0.01;
 newQ = handles.model.ikcon(tr,q); %updated q (need to check)
 % testQ = handles.model.ikcon(tr,handles.model.fkine(q));
 % for i = 1:5
@@ -311,18 +384,30 @@ disp('X +')
 
 % --- Executes on button press in pushbutton13. (Y +)
 function pushbutton13_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 tr = handles.model.fkine(q);
-tr(2,4) = tr(2,4) + 0.05;
+tr(2,4) = tr(2,4) + 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('Y +')
 
 % --- Executes on button press in pushbutton14. (Z +)
 function pushbutton14_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 tr = handles.model.fkine(q);
-tr(3,4) = tr(3,4) + 0.05;
+tr(3,4) = tr(3,4) + 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('Z +')
@@ -330,18 +415,30 @@ disp('Z +')
 
 % --- Executes on button press in pushbutton15. (X -)
 function pushbutton15_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 tr = handles.model.fkine(q);
-tr(1,4) = tr(1,4) - 0.05;
+tr(1,4) = tr(1,4) - 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('X -')
 
 % --- Executes on button press in pushbutton16. (Y -)
 function pushbutton16_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 tr = handles.model.fkine(q);
-tr(2,4) = tr(2,4) - 0.05;
+tr(2,4) = tr(2,4) - 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('Y -')
@@ -349,9 +446,15 @@ disp('Y -')
 
 % --- Executes on button press in pushbutton17 (Z -)
 function pushbutton17_Callback(hObject, eventdata, handles)
+
+if handles.EStopFlag == 1
+    disp('Press continue when safe');
+    return
+end
+
 q = handles.model.getpos;
 tr = handles.model.fkine(q);
-tr(3,4) = tr(3,4) - 0.05;
+tr(3,4) = tr(3,4) - 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('Z -')
@@ -362,8 +465,16 @@ function pushbutton18_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton18 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-eStopFlag = 1;
+%disp(handles.EStopFlag)
+if handles.EStopFlag == 1
+    disp('System already stopped - press continue when safe')
+    return
+else
+handles.EStopFlag = 1;
+guidata(hObject, handles);
+
 disp('STOP')
+end
 
 
 % --- Executes on button press in pushbutton19. ("Continue")
@@ -371,10 +482,12 @@ function pushbutton19_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton19 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if eStopFlag == 1
-    Disp('System back online');
-    eStopFlag = 0;
+if handles.EStopFlag == 1
+    disp('System back online');
+    handles.EStopFlag = 0;
+    guidata(hObject, handles);
 else
-    Disp('System already online')
+    disp('System already online')
+    disp(handles.EStopFlag);
 end
 
