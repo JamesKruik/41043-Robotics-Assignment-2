@@ -22,7 +22,7 @@ function varargout = NewDobotGUI(varargin)
 
 % Edit the above text to modify the response to help NewDobotGUI
 
-% Last Modified by GUIDE v2.5 03-May-2021 20:18:58
+% Last Modified by GUIDE v2.5 06-May-2021 17:28:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -85,26 +85,28 @@ function pushbutton1asdas_Callback(hObject, eventdata, handles)
 cla
 axes(handles.axes1);
 
-L1 = Link('d',0.0892,'a',0,'alpha',-pi/2,'offset',0,'qlim',[deg2rad(-360),deg2rad(360)]);
-L2 = Link('d',0.1357,'a',0.425,'alpha',-pi,'offset',-pi/2,'qlim',[deg2rad(-90),deg2rad(90)]);
-L3 = Link('d',0.1197,'a',0.39243,'alpha',pi,'offset',0,'qlim',[deg2rad(-170),deg2rad(170)]);
-L4 = Link('d',0.093,'a',0,'alpha',-pi/2,'offset',-pi/2,'qlim',[deg2rad(-360),deg2rad(360)]);
-L5 = Link('d',0.093,'a',0,'alpha',-pi/2,'offset',0,'qlim',[deg2rad(-360),deg2rad(360)]);
-L6 = Link('d',0,'a',0,'alpha',0,'offset',0,'qlim',[deg2rad(-360),deg2rad(360)]);
+L1 = Link('d',0.08,      'a',0,      'alpha', pi/2,   'offset',0.0,   'qlim', [deg2rad(-135), deg2rad(135)]);
+L2 = Link('d',0.0,      'a',-0.135,    'alpha',0,    'offset',-pi/2,   'qlim', [deg2rad(5), deg2rad(80)]);
+L3 = Link('d',0.0,      'a',-0.147,    'alpha',0,    'offset',0,   'qlim', [deg2rad(15), deg2rad(170)]);
+L4 = Link('d',0.0,      'a',-0.05254,    'alpha',-pi/2,    'offset',0,   'qlim', [deg2rad(-90), deg2rad(90)]);
+L5 = Link('d',-0.08,      'a',0,    'alpha',0,    'offset',0,   'qlim', [deg2rad(-85), deg2rad(85)]);
 
-model = SerialLink([L1 L2 L3 L4 L5 L6],'name','UR5');
-model.plot(zeros(1,model.n));
+model = SerialLink([L1 L2 L3 L4 L5],'name','DobotMagician');
+qHome = [0    0.8334    1.2898    0.2828   -0.8901];
+qHome(1,4) = pi/2 - qHome(1,2) -qHome(1,3);
+model.plot(qHome);
 
 disp('Loaded Dobot')
-for linkIndex = 0:model.n
-    [ faceData, vertexData, plyData{linkIndex+1} ] = plyread(['UR5Link',num2str(linkIndex),'.ply'],'tri'); %#ok<AGROW>        
-    model.faces{linkIndex+1} = faceData;
-    model.points{linkIndex+1} = vertexData;
-end
+eStopFlag = 0;
+% for linkIndex = 0:model.n
+%     [ faceData, vertexData, plyData{linkIndex+1} ] = plyread(['UR5Link',num2str(linkIndex),'.ply'],'tri'); %#ok<AGROW>        
+%     model.faces{linkIndex+1} = faceData;
+%     model.points{linkIndex+1} = vertexData;
+% end
 
 % Display robot
 workspace = [-2 2 -2 2 -0.1 2];   
-model.plot(zeros(1,model.n),'noarrow','workspace',workspace);
+%model.plot(zeros(1,model.n),'noarrow','workspace',workspace);
 if isempty(findobj(get(gca,'Children'),'Type','Light'))
     camlight
     
@@ -158,6 +160,14 @@ guidata(hObject,data);
 function pushbutton2_Callback(hObject, eventdata, handles)
 q = handles.model.getpos;
 q(1,1) = q(1,1) - 0.1;
+
+if q(1,1) < handles.model.qlim(1,1)
+    disp('Exceeding Joint Limit');
+    q(1,1) = handles.model.qlim(1,1);
+end
+
+q(1,4) = pi/2 - q(1,2) -q(1,3);
+
 handles.model.animate(q);
 disp('q1 -')
 
@@ -166,6 +176,13 @@ disp('q1 -')
 function pushbutton3_Callback(hObject, eventdata, handles)
 q = handles.model.getpos;
 q(1,1) = q(1,1) + 0.1;
+if q(1,1) > handles.model.qlim(1,2)
+    disp('Exceeding Joint Limit');
+    q(1,1) = handles.model.qlim(1,2);
+end
+
+q(1,4) = pi/2 - q(1,2) -q(1,3);
+
 handles.model.animate(q);
 disp('q1 +')
 
@@ -174,6 +191,13 @@ disp('q1 +')
 function pushbutton4_Callback(hObject, eventdata, handles)
 q = handles.model.getpos;
 q(1,2) = q(1,2) - 0.1;
+if q(1,2) < handles.model.qlim(2,1)
+    disp('Exceeding Joint Limit');
+    q(1,2) = handles.model.qlim(2,1);
+end
+
+q(1,4) = pi/2 - q(1,2) -q(1,3);
+
 handles.model.animate(q);
 disp('q2 -')
 
@@ -182,6 +206,13 @@ disp('q2 -')
 function pushbutton5_Callback(hObject, eventdata, handles)
 q = handles.model.getpos;
 q(1,2) = q(1,2) + 0.1;
+if q(1,2) > handles.model.qlim(2,2)
+    disp('Exceeding Joint Limit');
+    q(1,2) = handles.model.qlim(2,2);
+end
+
+q(1,4) = pi/2 - q(1,2) -q(1,3);
+
 handles.model.animate(q);
 disp('q2 +')
 
@@ -190,6 +221,13 @@ disp('q2 +')
 function pushbutton6_Callback(hObject, eventdata, handles)
 q = handles.model.getpos;
 q(1,3) = q(1,3) - 0.1;
+if q(1,3) < handles.model.qlim(3,1)
+    disp('Exceeding Joint Limit');
+    q(1,3) = handles.model.qlim(3,1);
+end
+
+q(1,4) = pi/2 - q(1,2) -q(1,3);
+
 handles.model.animate(q);
 disp('q3 -')
 
@@ -198,30 +236,41 @@ disp('q3 -')
 function pushbutton7_Callback(hObject, eventdata, handles)
 q = handles.model.getpos;
 q(1,3) = q(1,3) + 0.1;
+if q(1,3) > handles.model.qlim(3,2)
+    disp('Exceeding Joint Limit');
+    q(1,3) = handles.model.qlim(3,2);
+end
+
+q(1,4) = pi/2 - q(1,2) -q(1,3);
+
 handles.model.animate(q);
 disp('q3 +')
 
 
 % --- Executes on button press in pushbutton8. (q4 -)
 function pushbutton8_Callback(hObject, eventdata, handles)
-q = handles.model.getpos;
-q(1,4) = q(1,4) - 0.1;
-handles.model.animate(q);
-disp('q4 -')
+%q = handles.model.getpos;
+%q(1,4) = q(1,4) - 0.1;
+%handles.model.animate(q);
+disp('q4 is defined by q2 and q3')
 
 
 % --- Executes on button press in pushbutton9. (q4 +)
 function pushbutton9_Callback(hObject, eventdata, handles)
-q = handles.model.getpos;
-q(1,4) = q(1,4) + 0.1;
-handles.model.animate(q);
-disp('q4 +')
+%q = handles.model.getpos;
+%q(1,4) = q(1,4) + 0.1;
+%handles.model.animate(q);
+disp('q4 is defined by q2 and q3')
 
 
 % --- Executes on button press in pushbutton10. (q5 -)
 function pushbutton10_Callback(hObject, eventdata, handles)
 q = handles.model.getpos;
 q(1,5) = q(1,5) - 0.1;
+if q(1,5) < handles.model.qlim(5,1)
+    disp('Exceeding Joint Limit');
+    q(1,5) = handles.model.qlim(5,1);
+end
 handles.model.animate(q);
 disp('q5 -')
 
@@ -230,16 +279,33 @@ disp('q5 -')
 function pushbutton11_Callback(hObject, eventdata, handles)
 q = handles.model.getpos;
 q(1,5) = q(1,5) + 0.1;
+if q(1,5) > handles.model.qlim(5,2)
+    disp('Exceeding Joint Limit');
+    q(1,5) = handles.model.qlim(5,2);
+end
 handles.model.animate(q);
 disp('q5 +')
 
 
 % --- Executes on button press in pushbutton12. (X +)
 function pushbutton12_Callback(hObject, eventdata, handles)
-q = handles.model.getpos;
-tr = handles.model.fkine(q);
+q = handles.model.getpos;   %current q (safe)
+tr = handles.model.fkine(q); %current TR
+
 tr(1,4) = tr(1,4) + 0.05;
-newQ = handles.model.ikcon(tr,q);
+newQ = handles.model.ikcon(tr,q); %updated q (need to check)
+% testQ = handles.model.ikcon(tr,handles.model.fkine(q));
+% for i = 1:5
+%     if testQ(1,i) > handles.model.qlim(i,2)
+%         testQ(1,i) = handles.model.qlim(i,2);
+%         tr(1,4) = tr(1,4) - 0.05;
+%     end
+%     if testQ(1,i) < handles.model.qlim(i,1)
+%         testQ(1,i) = handles.model.qlim(i,1);
+%         tr(1,4) = tr(1,4) - 0.05;
+%     end
+% end
+        
 handles.model.animate(newQ);
 disp('X +')
 
@@ -291,10 +357,24 @@ handles.model.animate(newQ);
 disp('Z -')
 
 
-% --- Executes on button press in pushbutton18. (E-Stop)
+% --- Executes on button press in pushbutton18. ("E-Stop")
 function pushbutton18_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton18 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+eStopFlag = 1;
 disp('STOP')
+
+
+% --- Executes on button press in pushbutton19. ("Continue")
+function pushbutton19_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton19 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+if eStopFlag == 1
+    Disp('System back online');
+    eStopFlag = 0;
+else
+    Disp('System already online')
+end
 
