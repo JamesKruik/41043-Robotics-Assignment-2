@@ -25,8 +25,8 @@ classdef Dobot_Launch < handle
             %          %this is the Class constructor name of function is the same as the name of Class
             obj.Dobot = SerialLink([obj.L1 obj.L2 obj.L3 obj.L4], obj.name, obj.botID);
             
-            %             obj.Dobot.base = obj.fixedBase;
-            
+%                         obj.Dobot.base = obj.fixedBase;
+                          
             
         end
         
