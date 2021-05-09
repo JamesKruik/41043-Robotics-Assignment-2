@@ -452,3 +452,4 @@ if (nargin > 1 & strcmpi(Str,'Tri')) | nargout > 2
 else
    varargout{1} = Comments;
 end
+end

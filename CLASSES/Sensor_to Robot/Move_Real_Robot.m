@@ -20,14 +20,14 @@ dobot = DobotMagician();
 matchboxPoses = FindTags(15)
 
 % Publish custom end effector pose
-% dobot.PublishToolState(false);
-% end_effector_position = [0,0.0,0.1];        
-% end_effector_rotation = [0,0,0];
-% dobot.PublishEndEffectorPose(end_effector_position,end_effector_rotation);
-% pause(2)
-% pauseAmount = 2;
-% homePosition = [0.2,0.0,0.1];
-% brick1Pos = [0.3,0.1,-0.04];
+dobot.PublishToolState(false);
+end_effector_position = [0,0.0,0.1];        
+end_effector_rotation = [0,0,0];
+dobot.PublishEndEffectorPose(end_effector_position,end_effector_rotation);
+pause(2)
+pauseAmount = 2;
+homePosition = [0.2,0.0,0.1];
+
 
 brick1Pos = matchboxPoses{1,1}'
 brick2Pos = matchboxPoses{1,2}'
@@ -75,7 +75,7 @@ end_effector_rotation = [0,0,-1];
 dobot.PublishEndEffectorPose(end_effector_position,end_effector_rotation);
 pause(pauseAmount)
 
-%%
+%% Brick 1
 % (4)
 % Publish custom end effector pose
 end_effector_position = homePosition;        
@@ -132,7 +132,7 @@ pause(pauseAmount)
 
 % (1)
 % Publish custom end effector pose
-end_effector_position = brick2Pos;
+end_effector_position = M2Pos;
 end_effector_position(1,3) = end_effector_position(1,3) + wayPointOffsetDist;       
 end_effector_rotation = [0,0,-1];
 dobot.PublishEndEffectorPose(end_effector_position,end_effector_rotation);

@@ -1,27 +1,39 @@
 clc
 clf
 
-Dobot = Dobot_Launch;
+Dobot_sim = Dobot_Launch;
+Dobot_sim.Dobot.plotopt = {'nojoints', 'noname', 'noshadow', 'nowrist'};
+Dobot_sim.PlotAndColourRobot()
+Dobot_sim.Dobot.teach()
+Dobot_sim.Dobot.plot(qHome);
+%
 
-q0 = [0 0 0 0];
+% q0 = [0 0.7418 0.2653 0-1.5708];
 
 
 % Get position of 'home' configuration
-qHome = [0.0559    1.5551   -3.0788    0.2932    0.1047    0.2786]
-homeTr = Dobot.Dobot.fkine(qHome);
+qHome = [0 0.7418 0.2653 0-1.5708];
+homeTr = Dobot_sim.Dobot.fkine(qHome);
 homePoint = (homeTr(1:3,4));
-p560.plot(qHome);
 
-% generate points to simulate the matchboxes
-matchbox1 = transl(0.4,   0.25,   0.020)*trotx(pi);        %ensures it's always on the bench (same height as UR3)
-matchbox2 = transl(0.3,  0.26,   0.020)*trotx(pi);        %ensures it's always on the bench (same height as UR3)
-matchbox3 = transl(0.35,   0.3,   0.020)*trotx(pi);
+
+%% Find tags 
+matchBox_Poses = FindTags(5)
+%%
+Marker1Pos = matchBox_Poses{1,1}'
+Marker2Pos = matchBox_Poses{1,2}'
+Marker3Pos = matchBox_Poses{1,3}'
+
+%% generate points to simulate the matchboxes
+% matchbox1 = transl(Marker1Pos)*trotx(pi);        %ensures it's always on the bench (same height as UR3)
+matchbox2 = transl(Marker2Pos)*trotx(pi);        %ensures it's always on the bench (same height as UR3)
+% matchbox3 = transl(Marker3Pos)*trotx(pi);
 
 % plot the matchbox points
 hold on
 matchbox1Point = plot3(matchbox1(1,4), matchbox1(2,4), matchbox1(3,4), '*', 'color', 'b');
-matchbox2Point = plot3(matchbox2(1,4), matchbox2(2,4), matchbox2(3,4), '*', 'color', 'b');
-matchbox3Point = plot3(matchbox3(1,4), matchbox3(2,4), matchbox3(3,4), '*', 'color', 'b');
+matchbox2Point = plot3(matchbox2(1,4), matchbox2(2,4), matchbox2(3,4), '*', 'color', 'black');
+matchbox3Point = plot3(matchbox3(1,4), matchbox3(2,4), matchbox3(3,4), '*', 'color', 'r');
 
 matchboxCell = {matchbox1, matchbox2, matchbox3};
 
@@ -189,22 +201,22 @@ theta = [roll pitch yaw];
 % Animate all the bricks
 for x = 1:3
 
-qMatrix = GenerateRMRCTraj(p560, pickUpTrajCellArray{1,x}, theta, steps, deltaT, epsilon, qHome, W);
-% ExecuteTrajectory(p560, qMatrix, 0.001, planePoints);
-AnimateLinearTraj(p560, qMatrix, 0.001);
+qMatrix = GenerateRMRCTraj(Dobot_sim.Dobot, pickUpTrajCellArray{1,x}, theta, steps, deltaT, epsilon, qHome, W);
+% ExecuteTrajectory(Dobot_sim.Dobot, qMatrix, 0.001, planePoints);
+AnimateLinearTraj(Dobot_sim.Dobot, qMatrix, 0.001);
 
-qMatrix = GenerateRMRCTraj(p560, pickUpTrajCellArray{2,x}, theta, steps, deltaT, epsilon, qHome, W);
-% ExecuteTrajectory(p560, qMatrix, 0.001, planePoints);
-AnimateLinearTraj(p560, qMatrix, 0.001);
+qMatrix = GenerateRMRCTraj(Dobot_sim.Dobot, pickUpTrajCellArray{2,x}, theta, steps, deltaT, epsilon, qHome, W);
+% ExecuteTrajectory(Dobot_sim.Dobot, qMatrix, 0.001, planePoints);
+AnimateLinearTraj(Dobot_sim.Dobot, qMatrix, 0.001);
 
 
-qMatrix = GenerateRMRCTraj(p560, dropOffTrajCellArray{1,x}, theta, steps, deltaT, epsilon, qHome, W);
-% ExecuteTrajectory(p560, qMatrix, 0.001, planePoints);
-AnimateLinearTraj(p560, qMatrix, 0.001);
+qMatrix = GenerateRMRCTraj(Dobot_sim.Dobot, dropOffTrajCellArray{1,x}, theta, steps, deltaT, epsilon, qHome, W);
+% ExecuteTrajectory(Dobot_sim.Dobot, qMatrix, 0.001, planePoints);
+AnimateLinearTraj(Dobot_sim.Dobot, qMatrix, 0.001);
 
-qMatrix = GenerateRMRCTraj(p560, dropOffTrajCellArray{2,x}, theta, steps, deltaT, epsilon, qHome, W);
-% ExecuteTrajectory(p560, qMatrix, 0.001, planePoints);
-AnimateLinearTraj(p560, qMatrix, 0.001);
+qMatrix = GenerateRMRCTraj(Dobot_sim.Dobot, dropOffTrajCellArray{2,x}, theta, steps, deltaT, epsilon, qHome, W);
+% ExecuteTrajectory(Dobot_sim.Dobot, qMatrix, 0.001, planePoints);
+AnimateLinearTraj(Dobot_sim.Dobot, qMatrix, 0.001);
 
 end
 
