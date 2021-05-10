@@ -22,7 +22,7 @@ function varargout = NewDobotGUI(varargin)
 
 % Edit the above text to modify the response to help NewDobotGUI
 
-% Last Modified by GUIDE v2.5 06-May-2021 17:28:06
+% Last Modified by GUIDE v2.5 10-May-2021 12:19:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -58,7 +58,13 @@ handles.output = hObject;
 
 %disp('setting flag to 0')
 handles.EStopFlag = 0;
+handles.strq1Value = rad2deg(0);
+handles.strq2Value = rad2deg(0.7854);
+handles.strq3Value = rad2deg(1.3090);
+handles.strq4Value = rad2deg(0.2618);
+handles.strq5Value = rad2deg(-0.8727);
 
+[0 0.7854 1.3090 0.2618 -0.8727]
 % Update handles structure
 guidata(hObject, handles);
 
@@ -90,14 +96,17 @@ cla
 axes(handles.axes1);
 
 
-L1 = Link('d',0.08,      'a',0,      'alpha', pi/2,   'offset',0.0,   'qlim', [deg2rad(-135), deg2rad(135)]);
+
+
+
+L1 = Link('d',0.1,      'a',0,      'alpha', pi/2,   'offset',0.0,   'qlim', [deg2rad(-135), deg2rad(135)]);
 L2 = Link('d',0.0,      'a',-0.135,    'alpha',0,    'offset',-pi/2,   'qlim', [deg2rad(5), deg2rad(80)]);
 L3 = Link('d',0.0,      'a',-0.147,    'alpha',0,    'offset',0,   'qlim', [deg2rad(15), deg2rad(170)]);
 L4 = Link('d',0.0,      'a',-0.05254,    'alpha',-pi/2,    'offset',0,   'qlim', [deg2rad(-90), deg2rad(90)]);
 L5 = Link('d',-0.08,      'a',0,    'alpha',0,    'offset',0,   'qlim', [deg2rad(-85), deg2rad(85)]);
 
 model = SerialLink([L1 L2 L3 L4 L5],'name','DobotMagician');
-qHome = [0    0.8334    1.2898    0.2828   -0.8901];
+qHome = [0 0.7854 1.3090 0.2618 -0.8727];
 qHome(1,4) = pi/2 - qHome(1,2) -qHome(1,3);
 model.plot(qHome);
 
@@ -137,6 +146,7 @@ view(3)
     
 data = guidata(hObject);
 data.model = model;
+
 guidata(hObject,data);
 
 % hObject    handle to pushbutton1 (see GCBO)
@@ -173,17 +183,22 @@ if handles.EStopFlag == 1
 end
 q = handles.model.getpos;
 % Vary the value of the target joint by a small amount
-q(1,1) = q(1,1) - 0.1;
+q(1,1) = q(1,1) - deg2rad(5);
 
 if q(1,1) < handles.model.qlim(1,1)
     disp('Exceeding Joint Limit');
     q(1,1) = handles.model.qlim(1,1);
+    %q(1,1) = q(1,1) + 0.1;  %set back to normal
+
 end
 
 %update q config to reflect the relationship to the endeffector
 q(1,4) = pi/2 - q(1,2) -q(1,3);
 handles.model.animate(q);
 disp('q1 -')
+
+set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+guidata(hObject, handles);
 
 
 % --- Executes on button press in pushbutton3. (q1 +)
@@ -195,7 +210,7 @@ if handles.EStopFlag == 1
 end
 
 q = handles.model.getpos;
-q(1,1) = q(1,1) + 0.1;
+q(1,1) = q(1,1) + deg2rad(5);
 if q(1,1) > handles.model.qlim(1,2)
     disp('Exceeding Joint Limit');
     q(1,1) = handles.model.qlim(1,2);
@@ -204,6 +219,9 @@ end
 q(1,4) = pi/2 - q(1,2) -q(1,3);
 handles.model.animate(q);
 disp('q1 +')
+
+set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+guidata(hObject, handles);
 
 
 % --- Executes on button press in pushbutton4. (q2 -)
@@ -215,7 +233,7 @@ if handles.EStopFlag == 1
 end
 
 q = handles.model.getpos;
-q(1,2) = q(1,2) - 0.1;
+q(1,2) = q(1,2) - deg2rad(5);
 if q(1,2) < handles.model.qlim(2,1)
     disp('Exceeding Joint Limit');
     q(1,2) = handles.model.qlim(2,1);
@@ -225,6 +243,9 @@ q(1,4) = pi/2 - q(1,2) -q(1,3);
 
 handles.model.animate(q);
 disp('q2 -')
+set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+guidata(hObject, handles);
 
 
 % --- Executes on button press in pushbutton5. (q2 +)
@@ -236,7 +257,7 @@ if handles.EStopFlag == 1
 end
 
 q = handles.model.getpos;
-q(1,2) = q(1,2) + 0.1;
+q(1,2) = q(1,2) + deg2rad(5);
 if q(1,2) > handles.model.qlim(2,2)
     disp('Exceeding Joint Limit');
     q(1,2) = handles.model.qlim(2,2);
@@ -246,6 +267,10 @@ q(1,4) = pi/2 - q(1,2) -q(1,3);
 
 handles.model.animate(q);
 disp('q2 +')
+set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+guidata(hObject, handles);
+
 
 
 % --- Executes on button press in pushbutton6. (q3 -)
@@ -257,7 +282,7 @@ if handles.EStopFlag == 1
 end
 
 q = handles.model.getpos;
-q(1,3) = q(1,3) - 0.1;
+q(1,3) = q(1,3) - deg2rad(5);
 if q(1,3) < handles.model.qlim(3,1)
     disp('Exceeding Joint Limit');
     q(1,3) = handles.model.qlim(3,1);
@@ -267,6 +292,9 @@ q(1,4) = pi/2 - q(1,2) -q(1,3);
 
 handles.model.animate(q);
 disp('q3 -')
+set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+guidata(hObject, handles);
 
 
 % --- Executes on button press in pushbutton7. (q3 +)
@@ -278,7 +306,7 @@ if handles.EStopFlag == 1
 end
 
 q = handles.model.getpos;
-q(1,3) = q(1,3) + 0.1;
+q(1,3) = q(1,3) + deg2rad(5);
 if q(1,3) > handles.model.qlim(3,2)
     disp('Exceeding Joint Limit');
     q(1,3) = handles.model.qlim(3,2);
@@ -288,6 +316,10 @@ q(1,4) = pi/2 - q(1,2) -q(1,3);
 
 handles.model.animate(q);
 disp('q3 +')
+set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+guidata(hObject, handles);
+
 
 
 % --- Executes on button press in pushbutton8. (q4 -)
@@ -298,10 +330,12 @@ if handles.EStopFlag == 1
     return
 end
 
-%q = handles.model.getpos;
+q = handles.model.getpos;
 %q(1,4) = q(1,4) - 0.1;
 %handles.model.animate(q);
 disp('q4 is defined by q2 and q3')
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+guidata(hObject, handles);
 
 
 % --- Executes on button press in pushbutton9. (q4 +)
@@ -312,10 +346,12 @@ if handles.EStopFlag == 1
     return
 end
 
-%q = handles.model.getpos;
+q = handles.model.getpos;
 %q(1,4) = q(1,4) + 0.1;
 %handles.model.animate(q);
 disp('q4 is defined by q2 and q3')
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+guidata(hObject, handles);
 
 
 % --- Executes on button press in pushbutton10. (q5 -)
@@ -327,13 +363,15 @@ if handles.EStopFlag == 1
 end
 
 q = handles.model.getpos;
-q(1,5) = q(1,5) - 0.1;
+q(1,5) = q(1,5) - deg2rad(5);
 if q(1,5) < handles.model.qlim(5,1)
     disp('Exceeding Joint Limit');
     q(1,5) = handles.model.qlim(5,1);
 end
 handles.model.animate(q);
 disp('q5 -')
+set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+guidata(hObject, handles);
 
 
 % --- Executes on button press in pushbutton11. (q5 +)
@@ -345,13 +383,22 @@ if handles.EStopFlag == 1
 end
 
 q = handles.model.getpos;
-q(1,5) = q(1,5) + 0.1;
+q(1,5) = q(1,5) + deg2rad(5);
 if q(1,5) > handles.model.qlim(5,2)
     disp('Exceeding Joint Limit');
     q(1,5) = handles.model.qlim(5,2);
 end
 handles.model.animate(q);
 disp('q5 +')
+set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+
+set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+
+guidata(hObject, handles);
 
 
 % --- Executes on button press in pushbutton12. (X +)
@@ -381,6 +428,12 @@ newQ = handles.model.ikcon(tr,q); %updated q (need to check)
         
 handles.model.animate(newQ);
 disp('X +')
+set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+
 
 % --- Executes on button press in pushbutton13. (Y +)
 function pushbutton13_Callback(hObject, eventdata, handles)
@@ -396,6 +449,11 @@ tr(2,4) = tr(2,4) + 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('Y +')
+set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
 
 % --- Executes on button press in pushbutton14. (Z +)
 function pushbutton14_Callback(hObject, eventdata, handles)
@@ -411,6 +469,11 @@ tr(3,4) = tr(3,4) + 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('Z +')
+set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
 
 
 % --- Executes on button press in pushbutton15. (X -)
@@ -427,6 +490,11 @@ tr(1,4) = tr(1,4) - 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('X -')
+set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
 
 % --- Executes on button press in pushbutton16. (Y -)
 function pushbutton16_Callback(hObject, eventdata, handles)
@@ -442,6 +510,11 @@ tr(2,4) = tr(2,4) - 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('Y -')
+set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
 
 
 % --- Executes on button press in pushbutton17 (Z -)
@@ -458,6 +531,11 @@ tr(3,4) = tr(3,4) - 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
 disp('Z -')
+set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
 
 
 % --- Executes on button press in pushbutton18. ("E-Stop")
@@ -488,6 +566,129 @@ if handles.EStopFlag == 1
     guidata(hObject, handles);
 else
     disp('System already online')
-    disp(handles.EStopFlag);
+    %disp(handles.EStopFlag);
 end
 
+
+ % (q1 display value)
+function edit2_Callback(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit2 as text
+%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+set(handles.edit2, 'String', strq1Value);
+guidata(hObject, handles);
+disp('in the q1 display callback');
+% strFreq = num2str(freq);
+% set(handles.STFreqValue, 'String', strFreq);
+
+
+
+% --- Executes during object creation, after setting all properties.
+function edit2_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+disp('in the q1 display callback');
+
+
+function edit3_Callback(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit3 as text
+%        str2double(get(hObject,'String')) returns contents of edit3 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit3_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit4_Callback(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit4 as text
+%        str2double(get(hObject,'String')) returns contents of edit4 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit5_Callback(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit5 as text
+%        str2double(get(hObject,'String')) returns contents of edit5 as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function edit5_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit6_Callback(hObject, eventdata, handles)
+% hObject    handle to edit6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit6 as text
+%        str2double(get(hObject,'String')) returns contents of edit6 as a double
+set(handles.stringq1Value) = handles.q1Value;
+%set(handles.STFreqValue, 'String', strFreq);
+
+
+
+% --- Executes during object creation, after setting all properties.
+function edit6_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit6 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
