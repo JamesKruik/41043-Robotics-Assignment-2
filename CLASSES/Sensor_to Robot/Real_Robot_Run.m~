@@ -21,15 +21,15 @@ matchboxHeight = 0.015;
 
 %% Read Markers Data With Kinect
 matchBox5_Poses = FindTag5(2);
-Marker5_pose = [matchBox5_Poses{1,1} , matchBox5_Poses{1,2} , matchBox5_Poses{1,3}]/3
-%
+Marker5_pose = [matchBox5_Poses{1,1} , matchBox5_Poses{1,2} , matchBox5_Poses{1,3}]
+
 
 matchBox2_Poses = FindTag2(2);
-Marker2_pose = [matchBox2_Poses{1,1} , matchBox2_Poses{1,2} , matchBox2_Poses{1,3}]/3
-%%
+Marker2_pose = [matchBox2_Poses{1,1} , matchBox2_Poses{1,2} , matchBox2_Poses{1,3}]
+
 
 matchBox3_Poses = FindTag3(2);
-Marker3_pose = [matchBox3_Poses{1,1} , matchBox3_Poses{1,2} , matchBox3_Poses{1,3}]/3
+Marker3_pose = [matchBox3_Poses{1,1} , matchBox3_Poses{1,2} , matchBox3_Poses{1,3}]
 
 
 %% Markers Positions
