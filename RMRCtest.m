@@ -31,7 +31,7 @@ matchboxCell = {matchbox1, matchbox2, matchbox3};
 % Pyramid = 2;
 % Vertical tower = 3;
 
-assemblyOption = 2;
+assemblyOption = 1;
 
 switch assemblyOption
     case 1          % Horizontal line
@@ -170,6 +170,16 @@ plot3(dropTraj1(:,1),dropTraj1(:,2),dropTraj1(:,3),'r.','LineWidth',0.25)
 plot3(dropTraj2(:,1),dropTraj2(:,2),dropTraj2(:,3),'r.','LineWidth',0.25)
 plot3(dropTraj3(:,1),dropTraj3(:,2),dropTraj3(:,3),'r.','LineWidth',0.25)
 
+%% Set up collision avoidance
+[X,Y] = meshgrid(-1:0.05:1,-1:0.05:1);
+sizeMat = size(Y);
+Z = repmat(0,sizeMat(1),sizeMat(2));
+oneSideOfCube_h = surf(X,Y,Z);
+
+% Combine one surface as a point cloud
+planePoints = [X(:),Y(:),Z(:)];
+
+
 %% track the trajectory with RMRC
 roll = pi;
 pitch = 0;
@@ -183,11 +193,13 @@ T = [rpy2r(theta(1,1),theta(1,2),theta(1,3)) pickUpTrajCellArray{1,x}(1,:)';zero
 q0 = zeros(1,6);                                                            % Initial guess for joint angles
 qMatrix(1,:) = p560.ikcon(T,qHome);
 
+%put this into a function
+
 % 1.4) Track the trajectory with RMRC
 for i = 1:steps-1
     T = p560.fkine(qMatrix(i,:));                                           % Get forward transformation at current joint state
     deltaX = pickUpTrajCellArray{1,x}(i+1,:)' - T(1:3,4);                  % Get position error from next waypoint
-    Rd = rpy2r(theta(1,1),theta(1,2),theta(1,3));                     % Get next RPY angles, convert to rotation matrix
+    Rd = rpy2r(theta(1,1),theta(1,2),theta(1,3));                           % Get next RPY angles, convert to rotation matrix
     Ra = T(1:3,1:3);                                                        % Current end-effector rotation matrix
     Rdot = (1/deltaT)*(Rd - Ra);                                           % Calculate rotation matrix error
     S = Rdot*Ra';                                                           % Skew symmetric!
@@ -258,6 +270,8 @@ for i = 1:steps-1
 end
 
 AnimateLinearTraj(p560, qMatrix, 0.001);
+%execute - update one step, send one movement to the real robot, check
+    %   safety state
 qMatrix
 
 %% drop off
@@ -344,3 +358,5 @@ end
 AnimateLinearTraj(p560, qMatrix, 0.001);
 
 end
+
+

@@ -64,7 +64,7 @@ handles.strq3Value = rad2deg(1.3090);
 handles.strq4Value = rad2deg(0.2618);
 handles.strq5Value = rad2deg(-0.8727);
 
-[0 0.7854 1.3090 0.2618 -0.8727]
+
 % Update handles structure
 guidata(hObject, handles);
 
@@ -102,16 +102,15 @@ axes(handles.axes1);
 L1 = Link('d',0.1,      'a',0,      'alpha', pi/2,   'offset',0.0,   'qlim', [deg2rad(-135), deg2rad(135)]);
 L2 = Link('d',0.0,      'a',-0.135,    'alpha',0,    'offset',-pi/2,   'qlim', [deg2rad(5), deg2rad(80)]);
 L3 = Link('d',0.0,      'a',-0.147,    'alpha',0,    'offset',0,   'qlim', [deg2rad(15), deg2rad(170)]);
-L4 = Link('d',0.0,      'a',-0.05254,    'alpha',-pi/2,    'offset',0,   'qlim', [deg2rad(-90), deg2rad(90)]);
+L4 = Link('d',0.0,      'a',-0.05245,    'alpha',-pi/2,    'offset',0,   'qlim', [deg2rad(-90), deg2rad(90)]);
 L5 = Link('d',-0.08,      'a',0,    'alpha',0,    'offset',0,   'qlim', [deg2rad(-85), deg2rad(85)]);
 
 model = SerialLink([L1 L2 L3 L4 L5],'name','DobotMagician');
 qHome = [0 0.7854 1.3090 0.2618 -0.8727];
 qHome(1,4) = pi/2 - qHome(1,2) -qHome(1,3);
 model.plot(qHome);
-
 disp('Loaded Dobot')
-disp(handles.EStopFlag)
+%disp(handles.EStopFlag)
 
 % for linkIndex = 0:model.n
 %     [ faceData, vertexData, plyData{linkIndex+1} ] = plyread(['UR5Link',num2str(linkIndex),'.ply'],'tri'); %#ok<AGROW>        
@@ -181,23 +180,26 @@ if handles.EStopFlag == 1
     disp('Press continue when safe');
     return
 end
+% Get current joint configuration
 q = handles.model.getpos;
+
 % Vary the value of the target joint by a small amount
 q(1,1) = q(1,1) - deg2rad(5);
 
+% Check that the is still within joint limits
 if q(1,1) < handles.model.qlim(1,1)
     disp('Exceeding Joint Limit');
     q(1,1) = handles.model.qlim(1,1);
-    %q(1,1) = q(1,1) + 0.1;  %set back to normal
-
 end
 
 %update q config to reflect the relationship to the endeffector
 q(1,4) = pi/2 - q(1,2) -q(1,3);
-handles.model.animate(q);
-disp('q1 -')
 
-set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+% update the robot with the newly updated config
+handles.model.animate(q);
+
+%update the associated textbox
+set(handles.edit2, 'String', int2str(rad2deg(q(1,1))));
 guidata(hObject, handles);
 
 
@@ -216,11 +218,11 @@ if q(1,1) > handles.model.qlim(1,2)
     q(1,1) = handles.model.qlim(1,2);
 end
 
-q(1,4) = pi/2 - q(1,2) -q(1,3);
+q(1,4) = pi/2 - q(1,2) - q(1,3);
 handles.model.animate(q);
-disp('q1 +')
+%disp('q1 +')
 
-set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
+set(handles.edit2, 'String', int2str(rad2deg(q(1,1))));
 guidata(hObject, handles);
 
 
@@ -242,9 +244,9 @@ end
 q(1,4) = pi/2 - q(1,2) -q(1,3);
 
 handles.model.animate(q);
-disp('q2 -')
-set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+%disp('q2 -')
+set(handles.edit3, 'String', int2str(rad2deg(q(1,2))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
 guidata(hObject, handles);
 
 
@@ -266,9 +268,9 @@ end
 q(1,4) = pi/2 - q(1,2) -q(1,3);
 
 handles.model.animate(q);
-disp('q2 +')
-set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+%disp('q2 +')
+set(handles.edit3, 'String', int2str(rad2deg(q(1,2))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
 guidata(hObject, handles);
 
 
@@ -291,9 +293,9 @@ end
 q(1,4) = pi/2 - q(1,2) -q(1,3);
 
 handles.model.animate(q);
-disp('q3 -')
-set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+%disp('q3 -')
+set(handles.edit4, 'String', int2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
 guidata(hObject, handles);
 
 
@@ -315,9 +317,9 @@ end
 q(1,4) = pi/2 - q(1,2) -q(1,3);
 
 handles.model.animate(q);
-disp('q3 +')
-set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+%disp('q3 +')
+set(handles.edit4, 'String', int2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
 guidata(hObject, handles);
 
 
@@ -334,7 +336,7 @@ q = handles.model.getpos;
 %q(1,4) = q(1,4) - 0.1;
 %handles.model.animate(q);
 disp('q4 is defined by q2 and q3')
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
 guidata(hObject, handles);
 
 
@@ -350,7 +352,7 @@ q = handles.model.getpos;
 %q(1,4) = q(1,4) + 0.1;
 %handles.model.animate(q);
 disp('q4 is defined by q2 and q3')
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
 guidata(hObject, handles);
 
 
@@ -369,8 +371,8 @@ if q(1,5) < handles.model.qlim(5,1)
     q(1,5) = handles.model.qlim(5,1);
 end
 handles.model.animate(q);
-disp('q5 -')
-set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+%disp('q5 -')
+set(handles.edit6, 'String', int2str(rad2deg(q(1,5))));
 guidata(hObject, handles);
 
 
@@ -389,14 +391,14 @@ if q(1,5) > handles.model.qlim(5,2)
     q(1,5) = handles.model.qlim(5,2);
 end
 handles.model.animate(q);
-disp('q5 +')
-set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+%disp('q5 +')
+set(handles.edit6, 'String', int2str(rad2deg(q(1,5))));
 
-set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
-set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
-set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
-set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+set(handles.edit2, 'String', int2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', int2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', int2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', int2str(rad2deg(q(1,5))));
 
 guidata(hObject, handles);
 
@@ -427,12 +429,12 @@ newQ = handles.model.ikcon(tr,q); %updated q (need to check)
 % end
         
 handles.model.animate(newQ);
-disp('X +')
-set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
-set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
-set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
-set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+%disp('X +')
+set(handles.edit2, 'String', int2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', int2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', int2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', int2str(rad2deg(q(1,5))));
 
 
 % --- Executes on button press in pushbutton13. (Y +)
@@ -448,12 +450,12 @@ tr = handles.model.fkine(q);
 tr(2,4) = tr(2,4) + 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
-disp('Y +')
-set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
-set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
-set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
-set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+%disp('Y +')
+set(handles.edit2, 'String', int2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', int2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', int2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', int2str(rad2deg(q(1,5))));
 
 % --- Executes on button press in pushbutton14. (Z +)
 function pushbutton14_Callback(hObject, eventdata, handles)
@@ -468,12 +470,12 @@ tr = handles.model.fkine(q);
 tr(3,4) = tr(3,4) + 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
-disp('Z +')
-set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
-set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
-set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
-set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+%disp('Z +')
+set(handles.edit2, 'String', int2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', int2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', int2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', int2str(rad2deg(q(1,5))));
 
 
 % --- Executes on button press in pushbutton15. (X -)
@@ -489,12 +491,12 @@ tr = handles.model.fkine(q);
 tr(1,4) = tr(1,4) - 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
-disp('X -')
-set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
-set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
-set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
-set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+%disp('X -')
+set(handles.edit2, 'String', int2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', int2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', int2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', int2str(rad2deg(q(1,5))));
 
 % --- Executes on button press in pushbutton16. (Y -)
 function pushbutton16_Callback(hObject, eventdata, handles)
@@ -509,12 +511,12 @@ tr = handles.model.fkine(q);
 tr(2,4) = tr(2,4) - 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
-disp('Y -')
-set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
-set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
-set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
-set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+%disp('Y -')
+set(handles.edit2, 'String', int2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', int2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', int2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', int2str(rad2deg(q(1,5))));
 
 
 % --- Executes on button press in pushbutton17 (Z -)
@@ -530,12 +532,12 @@ tr = handles.model.fkine(q);
 tr(3,4) = tr(3,4) - 0.01;
 newQ = handles.model.ikcon(tr,q);
 handles.model.animate(newQ);
-disp('Z -')
-set(handles.edit2, 'String', num2str(rad2deg(q(1,1))));
-set(handles.edit3, 'String', num2str(rad2deg(q(1,2))));
-set(handles.edit4, 'String', num2str(rad2deg(q(1,3))));
-set(handles.edit5, 'String', num2str(rad2deg(q(1,4))));
-set(handles.edit6, 'String', num2str(rad2deg(q(1,5))));
+%disp('Z -')
+set(handles.edit2, 'String', int2str(rad2deg(q(1,1))));
+set(handles.edit3, 'String', int2str(rad2deg(q(1,2))));
+set(handles.edit4, 'String', int2str(rad2deg(q(1,3))));
+set(handles.edit5, 'String', int2str(rad2deg(q(1,4))));
+set(handles.edit6, 'String', int2str(rad2deg(q(1,5))));
 
 
 % --- Executes on button press in pushbutton18. ("E-Stop")
@@ -597,7 +599,7 @@ function edit2_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-disp('in the q1 display callback');
+%disp('in the q1 display callback');
 
 
 function edit3_Callback(hObject, eventdata, handles)
