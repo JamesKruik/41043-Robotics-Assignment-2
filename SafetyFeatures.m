@@ -36,8 +36,6 @@ port = '/dev/ttyUSB0';
 board = 'Uno';
 
 a = arduino(port, board);
-exponentValue = -1.1834;
-analogRange = [0,5];
 
 
 %% Write a small for loop which blinks the LED to test
@@ -56,6 +54,7 @@ analogRange = [0,5];
 % end
 
 %% IR sensor test
+
 irReadings = zeros(1,5);
 irThreshold = 0.7;
 curtainFlag = 0;
@@ -79,7 +78,7 @@ eStopRaw = readVoltage(a, 'A5');        % Analog pin 5 on arduino Uno
         curtainFlag = 1;    
     end
 
-if eStopRaw >= 4 && curtainFlag == 0 
+if eStopRaw >= 4 && curtainFlag == 1 
         disp('Safe, full speed');
         
 elseif eStopRaw >= 4 && curtainFlag == 1

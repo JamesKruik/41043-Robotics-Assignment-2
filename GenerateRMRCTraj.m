@@ -1,9 +1,10 @@
 function [qMatrix] = GenerateRMRCTraj(robot,linearTraj,theta, steps, deltaT, epsilon, initialGuess, weightingMatrix)
-
-
-
 %GENERATERMRCTRAJ Summary of this function goes here
 %   %[qMatrix] = GenerateRMRCTraj(robot,linearTraj,theta, steps, deltaT, epsilon, initialGuess, weightingMatrix)
+
+% Since this functionality was planned to be required in many places in our
+% project, it was put together into a function to make our Main easier to
+% read.
 
 
 T = [rpy2r(theta(1,1),theta(1,2),theta(1,3)) linearTraj(1,:)';zeros(1,3) 1]; % Create transformation of first point and angle

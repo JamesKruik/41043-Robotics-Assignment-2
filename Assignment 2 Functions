@@ -32,10 +32,10 @@ Properties
                 
                 if eStopRaw >= 4 && curtainFlag == 0
                     
-                    bool = True;
+                    bool = 1;
 
                 else
-                    bool = False;
+                    bool = 0;
                 end
 
 

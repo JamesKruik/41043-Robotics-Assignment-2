@@ -1,8 +1,8 @@
 function AnimateLinearTraj(robot, qMatrix, pauseValue)
 %ANIMATETRAJ Summary of this function goes here
-%   Detailed explanation goes here
-    % Flag True means new message to write.
-    % Flag false means clear the message.
+%   Simple function to animate the robot movements
+%   Iterates through a qMatrix, updating the current plot
+
 matrixSize = size(qMatrix);
 
     for i = 1:1: matrixSize(1,1) 
@@ -12,4 +12,3 @@ matrixSize = size(qMatrix);
         
     end
 end
-

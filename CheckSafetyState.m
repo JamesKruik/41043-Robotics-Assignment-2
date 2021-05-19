@@ -23,7 +23,6 @@ eStopRaw = readVoltage(a, 'A5');        % Analog pin 5 on arduino Uno
         safetyState = 1;
     else
         safetyState = 0;
-        
     end
     
 end

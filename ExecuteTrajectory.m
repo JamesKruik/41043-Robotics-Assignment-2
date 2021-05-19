@@ -1,6 +1,8 @@
 function ExecuteTrajectory(robot, qMatrix, pauseValue, planePoints)
 %ANIMATETRAJ Summary of this function goes here
-%   Detailed explanation goes here
+%   This function was written as a framework for how to animate the robot,
+%   whilst performing collision avoidance, and the necessary safety checks
+%   simultaneously.
     
 matrixSize = size(qMatrix);
 

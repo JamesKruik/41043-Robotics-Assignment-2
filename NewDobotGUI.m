@@ -24,6 +24,8 @@ function varargout = NewDobotGUI(varargin)
 
 % Last Modified by GUIDE v2.5 10-May-2021 12:19:39
 
+% This function generates a GUI to control the stick model of the Dobot
+
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
@@ -131,15 +133,6 @@ model.delay = 0;
 for linkIndex = 0:model.n
     handles = findobj('Tag', model.name);
     h = get(handles,'UserData');
-%     try 
-%         h.link(linkIndex+1).Children.FaceVertexCData = [plyData{linkIndex+1}.vertex.red ...
-%                                                       , plyData{linkIndex+1}.vertex.green ...
-%                                                       , plyData{linkIndex+1}.vertex.blue]/255;
-%         h.link(linkIndex+1).Children.FaceColor = 'interp';
-%     catch ME_1
-%         disp(ME_1);
-%         continue;
-%     end
 end
 view(3)
     
@@ -147,28 +140,6 @@ data = guidata(hObject);
 data.model = model;
 
 guidata(hObject,data);
-
-% hObject    handle to pushbutton1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% axes(handles.axes1);
-% cla;
-% 
-% popup_sel_index = get(handles.popupmenu1, 'Value');
-% switch popup_sel_index
-%     case 1
-%         plot(rand(5));
-%     case 2
-%         plot(sin(1:0.01:25.99));
-%     case 3
-%         bar(1:.5:10);
-%     case 4
-%         plot(membrane);
-%     case 5
-%         surf(peaks);
-% end
-
-
 
 
 % --- Executes on button press in pushbutton2. (q1 -)

@@ -1,3 +1,6 @@
+% This code was an attempt to put all the safety features together into one
+% class so that they would be easier to use throughout our code.
+
 classdef SafetyClass
     %SAFETYCLASS Summary of this class goes here
     %   Detailed explanation goes here

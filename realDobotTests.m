@@ -1,3 +1,5 @@
+% Function used to send and receive date from the real, physical dobot.
+
 
 %% Start Dobot Magician Node
 rosinit;

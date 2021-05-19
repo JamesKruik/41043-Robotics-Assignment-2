@@ -1,26 +1,34 @@
-% simulation for how we desired the dobot to execute it's linear
-% trajectories using RMRC
-
-
+% An attempt to modify "RMRC2" for use with our serial link stick model
+% which represented the DoBot
 
 clc
 clf
 
-mdl_puma560
+L1 = Link('d',0.1,      'a',0,      'alpha', pi/2,   'offset',pi,   'qlim', [deg2rad(-135), deg2rad(135)]);
+L2 = Link('d',0.0,      'a',-0.135,    'alpha',0,    'offset',-pi/2,   'qlim', [deg2rad(5), deg2rad(80)]);
+L3 = Link('d',0.0,      'a',-0.147,    'alpha',0,    'offset',0,   'qlim', [deg2rad(15), deg2rad(170)]);
+L4 = Link('d',0.0,      'a',-0.05254,    'alpha',-pi/2,    'offset',0,   'qlim', [deg2rad(-90), deg2rad(90)]);
+L5 = Link('d',-0.08,      'a',0,    'alpha',0,    'offset',0,   'qlim', [deg2rad(-85), deg2rad(85)]);
 
-q0 = [0 0 0 0 0 0];
+robot = SerialLink([L1 L2 L3 L4 L5],'name','DobotMagician');
+qHome = [0    0.5978    1.0463   -0.5524   -0.8901];
+qHome(1,4) = pi/2 - qHome(1,2) -qHome(1,3);
+
+%mdl_puma560
+
+%q0 = [0 0 0 0 0 0];
 
 
 % Get position of 'home' configuration
-qHome = [0.0559    1.5551   -3.0788    0.2932    0.1047    0.2786]
-homeTr = p560.fkine(qHome);
+%qHome = [0.0559    1.5551   -3.0788    0.2932    0.1047    0.2786]
+homeTr = robot.fkine(qHome);
 homePoint = (homeTr(1:3,4));
-p560.plot(qHome);
+robot.plot(qHome);
 
 % generate points to simulate the matchboxes
-matchbox1 = transl(0.4,   0.25,   0.020)*trotx(pi);        %ensures it's always on the bench (same height as UR3)
-matchbox2 = transl(0.3,  0.26,   0.020)*trotx(pi);        %ensures it's always on the bench (same height as UR3)
-matchbox3 = transl(0.35,   0.3,   0.020)*trotx(pi);
+matchbox1 = transl(0.2,   0.2,   0.02)*trotx(pi);        %ensures it's always on the bench (same height as UR3)
+matchbox2 = transl(0.22,  0.18,   0.020)*trotx(pi);        %ensures it's always on the bench (same height as UR3)
+matchbox3 = transl(0.24,   0.16,   0.020)*trotx(pi);
 
 % plot the matchbox points
 hold on
@@ -42,7 +50,7 @@ switch assemblyOption
     case 1          % Horizontal line
         disp('Horizontal line')
         
-drop1 = transl(0.44, -0.4, 0.020)*trotx(pi);
+drop1 = transl(-0.2, 0.2, 0.0)*trotx(pi);
 drop2 = transl(0.5, -0.4, 0.020)*trotx(pi);
 drop3 = transl(0.56, -0.4, 0.020)*trotx(pi);
 
@@ -70,9 +78,9 @@ drop3Point = plot3(drop3(1,4), drop3(2,4), drop3(3,4), '*', 'color', 'r');
     case 3          % Vertical tower
         disp('Vertical tower')
         
-drop1 = transl(0.5, -0.4, 0.020)*trotx(pi);
-drop2 = transl(0.5, -0.4, 0.040)*trotx(pi);
-drop3 = transl(0.5, -0.4, 0.060)*trotx(pi);
+drop1 = transl(0.2, -0.2, 0.0)*trotx(pi);
+drop2 = transl(0.25, -0.21, 0.040)*trotx(pi);
+drop3 = transl(0.3, -0.19, 0.060)*trotx(pi);
 
 
 dropCell = {drop1, drop2, drop3};
@@ -175,29 +183,29 @@ plot3(dropTraj1(:,1),dropTraj1(:,2),dropTraj1(:,3),'r.','LineWidth',0.25)
 plot3(dropTraj2(:,1),dropTraj2(:,2),dropTraj2(:,3),'r.','LineWidth',0.25)
 plot3(dropTraj3(:,1),dropTraj3(:,2),dropTraj3(:,3),'r.','LineWidth',0.25)
 
-%% Set up collision avoidance surface
-[X,Y] = meshgrid(-1:0.05:1,-1:0.05:1);
-sizeMat = size(Y);
-Z = repmat(0,sizeMat(1),sizeMat(2));
-oneSideOfCube_h = surf(X,Y,Z);
-
-% Combine one surface as a point cloud
-planePoints = [X(:),Y(:),Z(:)];
-%% Create link ellipsoids
-centerPoint = [0,0,0];
-radii = [0.1,0.1,0.1];
-[X,Y,Z] = ellipsoid( centerPoint(1), centerPoint(2), centerPoint(3), radii(1), radii(2), radii(3) );
-for i = 1:7
-    p560.points{i} = [X(:),Y(:),Z(:)];
-    warning off
-    p560.faces{i} = delaunay(p560.points{i});    
-    warning on;
-end
-
-p560.plot3d([0,0,0, 0, 0, 0]);
-axis equal
-camlight
-p560.teach
+% %% Set up collision avoidance surface
+% [X,Y] = meshgrid(-1:0.05:1,-1:0.05:1);
+% sizeMat = size(Y);
+% Z = repmat(0,sizeMat(1),sizeMat(2));
+% oneSideOfCube_h = surf(X,Y,Z);
+% 
+% % Combine one surface as a point cloud
+% planePoints = [X(:),Y(:),Z(:)];
+% %% Create link ellipsoids
+% centerPoint = [0,0,0];
+% radii = [0.5,0.1,0.1];
+% [X,Y,Z] = ellipsoid( centerPoint(1), centerPoint(2), centerPoint(3), radii(1), radii(2), radii(3) );
+% for i = 1:7
+%     p560.points{i} = [X(:),Y(:),Z(:)];
+%     warning off
+%     p560.faces{i} = delaunay(p560.points{i});    
+%     warning on;
+% end
+% 
+% p560.plot3d([0,0,0, 0, 0, 0]);
+% axis equal
+% camlight
+% p560.teach
 
 %% track the trajectory with RMRC
 roll = pi;
@@ -205,25 +213,33 @@ pitch = 0;
 yaw = pi;
 theta = [roll pitch yaw];    
 
-% Animate all the bricks
-for x = 1:3
 
-qMatrix = GenerateRMRCTraj(p560, pickUpTrajCellArray{1,x}, theta, steps, deltaT, epsilon, qHome, W);
+
+% 
+% qMatrix = pickUpTrajCellArray{1,1};
+% DobotAnimateLinearTraj(robot, qMatrix, 0.001);
+
+% Animate all the bricksx
+for x = 1:1
+
+
+
+qMatrix = GenerateRMRCTraj(robot, pickUpTrajCellArray{1,x}, theta, steps, deltaT, epsilon, qHome, W);
 % ExecuteTrajectory(p560, qMatrix, 0.001, planePoints);
-AnimateLinearTraj(p560, qMatrix, 0.001);
+AnimateLinearTraj(robot, pickUpTrajCellArray{1,x}, 0.001);
 
-qMatrix = GenerateRMRCTraj(p560, pickUpTrajCellArray{2,x}, theta, steps, deltaT, epsilon, qHome, W);
+qMatrix = GenerateRMRCTraj(robot, pickUpTrajCellArray{2,x}, theta, steps, deltaT, epsilon, qHome, W);
 % ExecuteTrajectory(p560, qMatrix, 0.001, planePoints);
-AnimateLinearTraj(p560, qMatrix, 0.001);
+AnimateLinearTraj(robot, pickUpTrajCellArray{1,x}, 0.001);
 
 
-qMatrix = GenerateRMRCTraj(p560, dropOffTrajCellArray{1,x}, theta, steps, deltaT, epsilon, qHome, W);
+qMatrix = GenerateRMRCTraj(robot, dropOffTrajCellArray{1,x}, theta, steps, deltaT, epsilon, qHome, W);
 % ExecuteTrajectory(p560, qMatrix, 0.001, planePoints);
-AnimateLinearTraj(p560, qMatrix, 0.001);
+AnimateLinearTraj(robot, qMatrix, 0.001);
 
-qMatrix = GenerateRMRCTraj(p560, dropOffTrajCellArray{2,x}, theta, steps, deltaT, epsilon, qHome, W);
+qMatrix = GenerateRMRCTraj(robot, dropOffTrajCellArray{2,x}, theta, steps, deltaT, epsilon, qHome, W);
 % ExecuteTrajectory(p560, qMatrix, 0.001, planePoints);
-AnimateLinearTraj(p560, qMatrix, 0.001);
+AnimateLinearTraj(robot, qMatrix, 0.001);
 
 end
 

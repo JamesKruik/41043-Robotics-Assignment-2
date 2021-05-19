@@ -8,6 +8,9 @@ board = 'Uno';
 
 a = arduino(port, board);
 
+numReadings = 5;
+
+% Allocate memory to hold ir readings
 irReadings = zeros(1,numReadings);
 
 for i = 1:numReadings
